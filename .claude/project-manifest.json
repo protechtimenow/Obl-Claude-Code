@@ -1,0 +1,203 @@
+{
+  "project": {
+    "name": "Obl Claude Code",
+    "description": "Advanced Automation Framework with Claude Code Integration",
+    "version": "1.0.0",
+    "type": "automation-framework",
+    "language": "python",
+    "license": "MIT"
+  },
+  "claude_code_integration": {
+    "enabled": true,
+    "version": "1.0",
+    "optimization_level": "enterprise",
+    "auto_commit": false,
+    "require_review": true,
+    "smart_suggestions": true
+  },
+  "architecture": {
+    "pattern": "microservices",
+    "async_support": true,
+    "containerized": true,
+    "cloud_ready": true,
+    "monitoring_enabled": true,
+    "security_hardened": true
+  },
+  "directories": {
+    "automation/": {
+      "purpose": "Core automation engine and process orchestration",
+      "key_files": [
+        "process-orchestrator.py",
+        "config.yaml"
+      ],
+      "claude_code_tasks": [
+        "Add new automation processes",
+        "Optimize async execution",
+        "Enhance error handling",
+        "Performance tuning"
+      ]
+    },
+    "scripts/": {
+      "purpose": "Development and deployment scripts",
+      "key_files": [
+        "setup-claude-integration.sh",
+        "claude-tasks/common-tasks.sh"
+      ],
+      "claude_code_tasks": [
+        "Create deployment scripts",
+        "Add maintenance utilities",
+        "Enhance setup automation"
+      ]
+    },
+    ".github/workflows/": {
+      "purpose": "CI/CD automation and GitHub Actions",
+      "claude_code_tasks": [
+        "Optimize CI/CD pipelines",
+        "Add security scans",
+        "Enhance deployment automation"
+      ]
+    },
+    "environments/": {
+      "purpose": "Environment-specific configurations",
+      "claude_code_tasks": [
+        "Add new environments",
+        "Optimize configurations",
+        "Manage secrets"
+      ]
+    },
+    "documentation/": {
+      "purpose": "Project documentation and guides",
+      "claude_code_tasks": [
+        "Generate API docs",
+        "Update workflow guides",
+        "Create deployment docs"
+      ]
+    }
+  },
+  "common_claude_code_workflows": {
+    "development": {
+      "analyze_code": "claude-code \"Analyze the automation framework and suggest improvements\"",
+      "add_feature": "claude-code \"Add a new automation process for [FEATURE_NAME]\"",
+      "optimize_performance": "claude-code \"Optimize the process orchestrator for better performance\"",
+      "enhance_security": "claude-code \"Review and enhance security measures across the framework\"",
+      "update_docs": "claude-code \"Update documentation for recent changes\""
+    },
+    "deployment": {
+      "prepare_staging": "claude-code \"Prepare the framework for staging deployment\"",
+      "deploy_production": "claude-code \"Execute blue-green deployment to production\"",
+      "health_check": "claude-code \"Run comprehensive health checks on deployed system\"",
+      "monitor_metrics": "claude-code \"Monitor performance metrics and suggest optimizations\""
+    },
+    "maintenance": {
+      "security_audit": "claude-code \"Perform security audit and fix vulnerabilities\"",
+      "dependency_update": "claude-code \"Update all dependencies and test compatibility\"",
+      "performance_analysis": "claude-code \"Analyze performance bottlenecks and optimize\"",
+      "cleanup_code": "claude-code \"Clean up code, fix linting issues, and improve quality\""
+    },
+    "troubleshooting": {
+      "debug_issues": "claude-code \"Debug the current system issues and provide fixes\"",
+      "analyze_logs": "claude-code \"Analyze system logs and identify problems\"",
+      "emergency_fix": "claude-code \"Implement emergency fix for critical issue\"",
+      "rollback": "claude-code \"Rollback last deployment due to issues\""
+    }
+  },
+  "automation_processes": {
+    "full_deployment_pipeline": {
+      "description": "Complete CI/CD pipeline with comprehensive automation",
+      "steps": 9,
+      "estimated_duration": "15-20 minutes",
+      "critical_steps": [
+        "code_quality_analysis",
+        "security_scan",
+        "integration_tests",
+        "deploy_production"
+      ]
+    },
+    "infrastructure_maintenance": {
+      "description": "Automated infrastructure maintenance and optimization",
+      "schedule": "Weekly",
+      "steps": 4,
+      "estimated_duration": "2-3 hours"
+    }
+  },
+  "technologies": {
+    "runtime": "Python 3.11+",
+    "frameworks": [
+      "asyncio",
+      "FastAPI",
+      "Celery"
+    ],
+    "databases": [
+      "PostgreSQL",
+      "Redis"
+    ],
+    "cloud_platforms": [
+      "AWS",
+      "Azure",
+      "Google Cloud"
+    ],
+    "container_orchestration": [
+      "Docker",
+      "Kubernetes"
+    ],
+    "monitoring": [
+      "Prometheus",
+      "Grafana"
+    ],
+    "ci_cd": [
+      "GitHub Actions"
+    ]
+  },
+  "security": {
+    "authentication": "JWT-based",
+    "encryption": "AES-256",
+    "secrets_management": "Environment variables",
+    "vulnerability_scanning": "Bandit, Safety",
+    "compliance": "SOC2, ISO27001 ready"
+  },
+  "monitoring": {
+    "metrics": "Prometheus",
+    "logging": "Structured JSON logs",
+    "health_checks": "Automated",
+    "alerting": "Webhook-based",
+    "dashboards": "Grafana-ready"
+  },
+  "development_guidelines": {
+    "code_style": "Black formatter",
+    "type_hints": "Required",
+    "testing": "pytest with >90% coverage",
+    "documentation": "Sphinx with docstrings",
+    "git_hooks": "Pre-commit quality checks",
+    "branch_strategy": "GitFlow"
+  },
+  "claude_code_best_practices": {
+    "1": "Always specify the exact task you want Claude Code to perform",
+    "2": "Use environment-specific commands based on your current context",
+    "3": "Review changes before committing, especially in production branches", 
+    "4": "Leverage Claude Code for complex analysis and optimization tasks",
+    "5": "Use Claude Code to maintain documentation and keep it current",
+    "6": "Let Claude Code handle repetitive tasks and boilerplate code",
+    "7": "Trust Claude Code for security and performance recommendations"
+  },
+  "quick_start_commands": {
+    "1_analyze_project": "claude-code \"Analyze this automation framework and tell me what I should work on first\"",
+    "2_code_review": "claude-code \"Review my recent changes and suggest improvements\"",
+    "3_add_feature": "claude-code \"Add comprehensive error handling to the process orchestrator\"",
+    "4_security_check": "claude-code \"Perform security audit and fix any vulnerabilities\"",
+    "5_optimize": "claude-code \"Optimize the automation processes for better performance\"",
+    "6_deploy": "claude-code \"Prepare and execute deployment to staging environment\"",
+    "7_monitor": "claude-code \"Check system health and generate status report\""
+  },
+  "troubleshooting": {
+    "setup_issues": "Run ./scripts/setup-claude-integration.sh with verbose output",
+    "claude_code_not_working": "Check Claude Code installation and authentication",
+    "permission_errors": "Ensure proper GitHub permissions and token configuration",
+    "dependency_issues": "Run pip install -r requirements.txt in virtual environment"
+  },
+  "next_steps": [
+    "Clone repository: git clone https://github.com/protechtimenow/Obl-Claude-Code.git",
+    "Run setup: ./scripts/setup-claude-integration.sh", 
+    "Start exploring: claude-code \"Show me what this automation framework can do\"",
+    "Begin development: claude-code \"What should I build next?\""
+  ]
+}
