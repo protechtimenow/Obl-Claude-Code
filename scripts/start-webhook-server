@@ -1,0 +1,241 @@
+#!/bin/bash
+# Start OBL.DEV Webhook Server
+# Establishes communication bridge between web and AI endpoints
+
+set -e
+
+# Load environment
+if [ -f .env ]; then
+    source .env
+fi
+
+# Configuration
+readonly WEBHOOK_PORT=${WEBHOOK_PORT:-8080}
+readonly WEBHOOK_SECRET=${WEBHOOK_SECRET:-obl-dev-secret}
+readonly LOG_FILE=".logs/webhook-server.log"
+
+# Colors
+readonly GREEN='\033[0;32m'
+readonly BLUE='\033[0;34m'
+readonly YELLOW='\033[1;33m'
+readonly RED='\033[0;31m'
+readonly NC='\033[0m'
+
+info() { echo -e "${BLUE}🌐 $1${NC}"; }
+success() { echo -e "${GREEN}✅ $1${NC}"; }
+warning() { echo -e "${YELLOW}⚠️ $1${NC}"; }
+error() { echo -e "${RED}❌ $1${NC}"; }
+
+# Check prerequisites
+check_prerequisites() {
+    info "Checking prerequisites..."
+    
+    # Check Python
+    if ! command -v python3 &> /dev/null; then
+        error "Python 3 is required but not installed"
+        exit 1
+    fi
+    
+    # Check required packages
+    if ! python3 -c "import aiohttp" 2>/dev/null; then
+        warning "Installing required packages..."
+        pip3 install aiohttp
+    fi
+    
+    # Check environment variables
+    if [ -z "$ANTHROPIC_API_KEY" ]; then
+        warning "ANTHROPIC_API_KEY not set"
+    fi
+    
+    if [ -z "$GITHUB_TOKEN" ]; then
+        warning "GITHUB_TOKEN not set"
+    fi
+    
+    success "Prerequisites checked"
+}
+
+# Setup logging
+setup_logging() {
+    mkdir -p .logs
+    info "Logs will be written to: $LOG_FILE"
+}
+
+# Start webhook server
+start_server() {
+    info "Starting OBL.DEV Webhook Server on port $WEBHOOK_PORT"
+    
+    # Set environment variables
+    export WEBHOOK_PORT="$WEBHOOK_PORT"
+    export WEBHOOK_SECRET="$WEBHOOK_SECRET"
+    
+    # Start the webhook handler
+    python3 webhooks/obl-webhook-handler.py 2>&1 | tee "$LOG_FILE" &
+    
+    local server_pid=$!
+    echo "$server_pid" > .webhook-server.pid
+    
+    # Wait a moment and check if server started
+    sleep 2
+    
+    if kill -0 "$server_pid" 2>/dev/null; then
+        success "Webhook server started (PID: $server_pid)"
+        success "Webhook endpoints available at:"
+        echo "  🔗 http://localhost:$WEBHOOK_PORT/webhook/obl-dev"
+        echo "  🔗 http://localhost:$WEBHOOK_PORT/webhook/claude" 
+        echo "  🔗 http://localhost:$WEBHOOK_PORT/webhook/github"
+        echo "  📊 http://localhost:$WEBHOOK_PORT/status"
+        
+        # Test server health
+        test_server
+        
+    else
+        error "Failed to start webhook server"
+        exit 1
+    fi
+}
+
+# Test server health
+test_server() {
+    info "Testing server health..."
+    
+    sleep 1
+    
+    if curl -s "http://localhost:$WEBHOOK_PORT/" >/dev/null; then
+        success "Server health check passed"
+        
+        # Show server status
+        echo ""
+        info "Server Status:"
+        curl -s "http://localhost:$WEBHOOK_PORT/status" | python3 -m json.tool || echo "Status endpoint not yet ready"
+        
+    else
+        warning "Server health check failed - server may still be starting"
+    fi
+}
+
+# Stop existing server
+stop_server() {
+    if [ -f .webhook-server.pid ]; then
+        local pid=$(cat .webhook-server.pid)
+        if kill -0 "$pid" 2>/dev/null; then
+            info "Stopping existing webhook server (PID: $pid)"
+            kill "$pid"
+            rm -f .webhook-server.pid
+            success "Webhook server stopped"
+        else
+            warning "PID file exists but process not running"
+            rm -f .webhook-server.pid
+        fi
+    else
+        info "No webhook server running"
+    fi
+}
+
+# Show server status
+show_status() {
+    if [ -f .webhook-server.pid ]; then
+        local pid=$(cat .webhook-server.pid)
+        if kill -0 "$pid" 2>/dev/null; then
+            success "Webhook server running (PID: $pid)"
+            
+            # Check server health
+            if curl -s "http://localhost:$WEBHOOK_PORT/status" >/dev/null; then
+                info "Server endpoints:"
+                echo "  🔗 POST /webhook/obl-dev (obl.dev integration)"
+                echo "  🔗 POST /webhook/claude (Claude API responses)"
+                echo "  🔗 POST /webhook/github (GitHub events)"
+                echo "  📊 GET /status (health check)"
+                
+                echo ""
+                info "Current status:"
+                curl -s "http://localhost:$WEBHOOK_PORT/status" | python3 -m json.tool
+            else
+                warning "Server running but not responding"
+            fi
+        else
+            error "PID file exists but server not running"
+            rm -f .webhook-server.pid
+        fi
+    else
+        warning "Webhook server not running"
+    fi
+}
+
+# Setup GitHub webhook
+setup_github_webhook() {
+    info "Setting up GitHub webhook..."
+    
+    if [ -z "$GITHUB_TOKEN" ]; then
+        error "GITHUB_TOKEN required for GitHub webhook setup"
+        return 1
+    fi
+    
+    # Get the public URL (for now using placeholder)
+    local webhook_url="https://your-domain.com/webhook/github"
+    warning "Please configure your GitHub webhook manually:"
+    echo "  URL: $webhook_url"
+    echo "  Content type: application/json"
+    echo "  Secret: $WEBHOOK_SECRET"
+    echo "  Events: push, workflow_run"
+}
+
+# Main function
+main() {
+    local command="${1:-start}"
+    
+    case "$command" in
+        "start")
+            check_prerequisites
+            setup_logging
+            start_server
+            ;;
+        "stop")
+            stop_server
+            ;;
+        "restart")
+            stop_server
+            sleep 1
+            check_prerequisites
+            setup_logging
+            start_server
+            ;;
+        "status")
+            show_status
+            ;;
+        "setup-github")
+            setup_github_webhook
+            ;;
+        "logs")
+            if [ -f "$LOG_FILE" ]; then
+                tail -f "$LOG_FILE"
+            else
+                warning "No log file found"
+            fi
+            ;;
+        "help")
+            echo "OBL.DEV Webhook Server"
+            echo "Usage: start-webhook-server <command>"
+            echo ""
+            echo "Commands:"
+            echo "  start        - Start the webhook server"
+            echo "  stop         - Stop the webhook server"
+            echo "  restart      - Restart the webhook server"
+            echo "  status       - Show server status"
+            echo "  setup-github - Setup GitHub webhook"
+            echo "  logs         - Show server logs"
+            echo ""
+            echo "Endpoints:"
+            echo "  POST /webhook/obl-dev   - Receive tasks from obl.dev"
+            echo "  POST /webhook/claude    - Receive Claude API responses"
+            echo "  POST /webhook/github    - Receive GitHub events"
+            echo "  GET  /status            - Server health check"
+            ;;
+        *)
+            error "Unknown command: $command"
+            echo "Use: start-webhook-server help"
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
